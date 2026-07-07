@@ -106,20 +106,46 @@ const Music=(()=>{
   function tone(f,s,d,v,tp,dst){const o=ctx.createOscillator(),g=ctx.createGain();o.type=tp||"sine";o.frequency.value=f;
     g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(v,s+.08);g.gain.exponentialRampToValueAtTime(1e-4,s+d);
     o.connect(g).connect(dst||master);o.start(s);o.stop(s+d+.1);}
-  function drum(){const s=ctx.currentTime+.02,b=ctx.createBuffer(1,ctx.sampleRate*.5,ctx.sampleRate),ch=b.getChannelData(0);
+  let hall=null;
+  function ensureHall(){if(hall)return;                      // cheap epic-hall echo
+    hall=ctx.createDelay(1);hall.delayTime.value=.31;
+    const fb=ctx.createGain();fb.gain.value=.34;
+    const wet=ctx.createGain();wet.gain.value=.5;
+    hall.connect(fb).connect(hall);hall.connect(wet).connect(master);}
+  function toHall(node){ensureHall();node.connect(master);node.connect(hall);}
+  function taiko(s,big){                                     // war drum with pitch-drop thump
+    const b=ctx.createBuffer(1,ctx.sampleRate*.5,ctx.sampleRate),ch=b.getChannelData(0);
     for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*Math.pow(1-i/ch.length,3);
-    const src=ctx.createBufferSource();src.buffer=b;const f=ctx.createBiquadFilter();f.type="lowpass";f.frequency.value=130;
-    const g=ctx.createGain();g.gain.setValueAtTime(.5,s);g.gain.exponentialRampToValueAtTime(1e-4,s+.5);
-    src.connect(f).connect(g).connect(master);src.start(s);}
+    const src=ctx.createBufferSource();src.buffer=b;
+    const f=ctx.createBiquadFilter();f.type="lowpass";f.frequency.value=big?150:340;
+    const g=ctx.createGain();g.gain.setValueAtTime(big?.65:.3,s);g.gain.exponentialRampToValueAtTime(1e-4,s+(big?.5:.28));
+    src.connect(f).connect(g);toHall(g);src.start(s);
+    const o=ctx.createOscillator(),og=ctx.createGain();o.type="sine";
+    o.frequency.setValueAtTime(big?58:80,s);o.frequency.exponentialRampToValueAtTime(30,s+.28);
+    og.gain.setValueAtTime(big?.5:.22,s);og.gain.exponentialRampToValueAtTime(1e-4,s+.3);
+    o.connect(og);toHall(og);o.start(s);o.stop(s+.35);}
+  function choir(f,s,d,v,att){                               // formant-filtered "male choir"
+    const g=ctx.createGain();g.gain.setValueAtTime(0,s);
+    g.gain.linearRampToValueAtTime(v,s+(att||.25));g.gain.setValueAtTime(v,s+d*.6);g.gain.linearRampToValueAtTime(0,s+d);
+    const f1=ctx.createBiquadFilter();f1.type="bandpass";f1.frequency.value=520;f1.Q.value=1.6;
+    const f2=ctx.createBiquadFilter();f2.type="bandpass";f2.frequency.value=910;f2.Q.value=2.2;
+    const mix=ctx.createGain();f1.connect(mix);f2.connect(mix);mix.connect(g);toHall(g);
+    for(const det of[-5,0,4]){const o=ctx.createOscillator();o.type="sawtooth";
+      o.frequency.value=f*(1+det/1000);o.connect(f1);o.connect(f2);o.start(s);o.stop(s+d+.05);}}
+  /* Dragonborn-style sequencer: D minor, galloping taikos, three-syllable chant */
+  const STEP=.21,D2=73.42;
+  const PROG=[1,1,4/5,8/9];                                  // D — D — Bb — C  (as ratios of D2)
+  const CHANT=[[3/2,4/3,6/5],[1,6/5,4/3],[3/2,4/3,6/5],[2,9/5,3/2]]; // original nordic line, not the game's melody
   let step=0;
-  const motif=[110,164.81,146.83,110,130.81,98,110,82.41];
-  function tick(){const s=ctx.currentTime+.05;
-    if(step%4===0)drum();
-    if(step%2===0){tone(55,s,4,.05,"sawtooth");tone(82.41,s,4,.03,"sawtooth");}   // cold drone fifth
-    tone(motif[step%motif.length],s,3,.04,"triangle");
-    if(step%16===8){tone(220,s,2.6,.03,"sine");tone(261.63,s,2.6,.022,"sine");}   // distant choir
+  function tick(){const s=ctx.currentTime+.08;
+    const bar=Math.floor(step/16)%4,st=step%16,root=D2*PROG[bar];
+    if([0,3,4,8,11,12].includes(st))taiko(s,st===0||st===8);          // gallop
+    if(st===0){choir(root,s,3.4,.085);choir(root*1.5,s,3.4,.05);choir(root*2,s,3.4,.04);}  // chord bed
+    if(st===0||st===5||st===10){const n=CHANT[bar][st===0?0:st===5?1:2];
+      choir(root*2*n,s,1.05,.11,.06);}                               // FUS-RO-DAH style chant
+    if(st===8&&bar%2===1)tone(root*4,s,1.6,.03,"triangle");          // faint horn answer
     step++;}
-  function start(){if(on)return;ac();on=true;step=0;tick();timers.push(setInterval(tick,2000));}
+  function start(){if(on)return;ac();ensureHall();on=true;step=0;tick();timers.push(setInterval(tick,STEP*1000));}
   function stop(){on=false;timers.forEach(clearInterval);timers=[];}
   function roar(){ac();const s=ctx.currentTime+.02;
     const o=ctx.createOscillator(),g=ctx.createGain();o.type="sawtooth";
