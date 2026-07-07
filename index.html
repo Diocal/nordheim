@@ -6,42 +6,55 @@
 <title>NORDHEIM — A Tale of the North</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;overflow:hidden;font-family:Georgia,"Times New Roman",serif;touch-action:none;background:#0b0e14}
-  #cv{display:block}
-  /* crosshair */
-  #cross{position:fixed;left:50%;top:50%;width:6px;height:6px;border-radius:50%;transform:translate(-50%,-50%);
-    background:rgba(255,255,255,.65);pointer-events:none;z-index:5}
-  /* compass */
-  #compass{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:6;opacity:.92}
-  /* bars */
-  #bars{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:26px;z-index:6}
-  .bar{width:210px;height:9px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.35);border-radius:2px;overflow:hidden}
+  html,body{height:100%;overflow:hidden;font-family:"Futura","Segoe UI",Arial,sans-serif;touch-action:none;background:#07090c}
+  #cv{display:block;touch-action:none}
+  /* crosshair: skyrim dot */
+  #cross{position:fixed;left:50%;top:50%;width:5px;height:5px;border-radius:50%;transform:translate(-50%,-50%);
+    background:rgba(235,240,244,.75);box-shadow:0 0 4px rgba(0,0,0,.8);pointer-events:none;z-index:5}
+  /* compass strip */
+  #compass{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:6;opacity:.95;max-width:70vw}
+  /* skyrim bars: magicka | health | stamina */
+  #bars{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:34px;z-index:6;align-items:center}
+  .bar{width:190px;height:7px;background:rgba(8,10,12,.72);border:1px solid rgba(210,218,226,.5);overflow:hidden;
+    box-shadow:0 0 6px rgba(0,0,0,.7),inset 0 0 4px rgba(0,0,0,.9)}
   .bar i{display:block;height:100%;width:100%;transition:width .15s}
-  #hp i{background:linear-gradient(#c33,#801515)}
-  #st i{background:linear-gradient(#3a8f3a,#1e5c1e)}
-  #sh i{background:linear-gradient(#3aa7c9,#1d5d75)}
+  #sh i{background:linear-gradient(#7db8e8,#2c5c8a)}
+  #hp i{background:linear-gradient(#c04038,#6e1512)}
+  #st i{background:linear-gradient(#69a052,#2c5220)}
   /* HUD texts */
-  #msg{position:fixed;top:26%;left:50%;transform:translateX(-50%);color:#e8dcae;font-size:26px;letter-spacing:5px;
-    text-shadow:0 2px 12px #000;opacity:0;transition:opacity .8s;z-index:7;text-align:center;white-space:nowrap}
-  #shout{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:64px;letter-spacing:14px;
-    text-shadow:0 0 30px #9fd8ff;opacity:0;z-index:7;font-weight:bold}
-  #kills{position:fixed;bottom:18px;left:16px;color:#cfc6a8;font-size:14px;letter-spacing:1px;text-shadow:0 1px 3px #000;z-index:6}
-  #flash{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(160,0,0,.55) 100%)}
+  #msg{position:fixed;top:22%;left:50%;transform:translateX(-50%);color:#e6eaee;font-size:21px;letter-spacing:4px;
+    text-transform:uppercase;text-shadow:0 2px 10px #000;opacity:0;transition:opacity .8s;z-index:7;text-align:center;white-space:nowrap}
+  #shout{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:64px;letter-spacing:16px;
+    text-shadow:0 0 34px #9fd8ff;opacity:0;z-index:7;font-weight:600}
+  #kills{position:fixed;bottom:16px;left:14px;color:#c9ccd0;font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    text-shadow:0 1px 3px #000;z-index:6}
+  #flash{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(150,0,0,.6) 100%)}
   #wflash{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;background:radial-gradient(ellipse at center,rgba(210,240,255,.75),transparent 70%)}
-  #musicBtn{position:fixed;top:12px;right:12px;z-index:9;background:rgba(0,0,0,.45);color:#e8dcae;border:1px solid rgba(232,220,174,.4);
-    padding:7px 13px;border-radius:4px;font-family:inherit;font-size:13px;letter-spacing:1px;cursor:pointer}
+  #musicBtn{position:fixed;top:10px;right:12px;z-index:9;background:rgba(8,10,12,.55);color:#dfe3e6;border:1px solid rgba(210,218,226,.35);
+    padding:7px 13px;font-family:inherit;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase}
+  /* touch controls */
+  #touch{display:none}
+  #joy{position:fixed;left:26px;bottom:70px;width:118px;height:118px;border-radius:50%;z-index:10;
+    background:rgba(10,12,14,.35);border:1px solid rgba(210,218,226,.35)}
+  #knob{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;transform:translate(-50%,-50%);
+    background:rgba(220,226,232,.5);box-shadow:0 3px 10px rgba(0,0,0,.4)}
+  #btns{position:fixed;right:22px;bottom:64px;display:flex;flex-direction:column;gap:14px;z-index:10}
+  .tbtn{width:62px;height:62px;border-radius:50%;background:rgba(10,12,14,.45);border:1px solid rgba(210,218,226,.4);
+    color:#e6eaee;font-size:26px;display:flex;align-items:center;justify-content:center;user-select:none}
   /* overlays */
-  .ovl{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a2230 0%,#080b12 75%);display:flex;
-    flex-direction:column;align-items:center;justify-content:center;z-index:20;transition:opacity .6s;color:#e8dcae}
+  .ovl{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%,#232a33 0%,#0a0d11 70%);display:flex;
+    flex-direction:column;align-items:center;justify-content:center;z-index:20;transition:opacity .6s;color:#e6eaee}
   .ovl.hide{opacity:0;pointer-events:none}
-  .ovl h1{font-size:64px;letter-spacing:18px;font-weight:normal;text-shadow:0 0 40px rgba(159,216,255,.35)}
-  .ovl .sub{margin:10px 0 30px;font-size:15px;letter-spacing:4px;color:#9aa7b8}
-  .ovl table{color:#cfc6a8;font-size:14px;border-spacing:14px 4px;margin-bottom:28px}
-  .ovl td:first-child{color:#8fa0b5;text-align:right}
-  .ovl button{background:none;border:1px solid #e8dcae;color:#e8dcae;font-family:inherit;font-size:17px;
-    letter-spacing:5px;padding:12px 42px;cursor:pointer;border-radius:2px}
-  .ovl button:hover{background:rgba(232,220,174,.12)}
-  #died{background:rgba(5,3,3,.82)}#died h1{color:#b03030;text-shadow:0 0 40px #500}
+  .ovl h1{font-size:58px;letter-spacing:26px;font-weight:400;text-transform:uppercase;text-indent:26px;
+    text-shadow:0 0 46px rgba(159,216,255,.25),0 2px 8px #000}
+  .ovl .rule{width:340px;height:1px;background:linear-gradient(90deg,transparent,#9aa4ae,transparent);margin:16px 0}
+  .ovl .sub{margin:2px 0 26px;font-size:13px;letter-spacing:7px;color:#8f9aa6;text-transform:uppercase}
+  .ovl table{color:#b9c0c7;font-size:13px;letter-spacing:1px;border-spacing:14px 4px;margin-bottom:26px;text-transform:uppercase}
+  .ovl td:first-child{color:#7d8894;text-align:right}
+  .ovl button{background:none;border:1px solid #b9c0c7;color:#e6eaee;font-family:inherit;font-size:15px;
+    letter-spacing:6px;padding:12px 44px;cursor:pointer;text-transform:uppercase;text-indent:6px}
+  .ovl button:hover{background:rgba(220,226,232,.1)}
+  #died{background:rgba(4,3,3,.85)}#died h1{color:#a82c2c;text-shadow:0 0 40px #400}
 </style>
 </head>
 <body>
@@ -49,9 +62,17 @@
 <div id="cross"></div>
 <canvas id="compass" width="520" height="46"></canvas>
 <div id="bars">
+  <div class="bar" id="sh"><i></i></div>
   <div class="bar" id="hp"><i></i></div>
   <div class="bar" id="st"><i></i></div>
-  <div class="bar" id="sh"><i></i></div>
+</div>
+<div id="touch">
+  <div id="joy"><div id="knob"></div></div>
+  <div id="btns">
+    <div class="tbtn" id="bAtk">⚔️</div>
+    <div class="tbtn" id="bShout">🌀</div>
+    <div class="tbtn" id="bJump">⤒</div>
+  </div>
 </div>
 <div id="msg"></div><div id="shout">FUS</div>
 <div id="kills"></div>
@@ -60,7 +81,8 @@
 
 <div class="ovl" id="overlay">
   <h1>NORDHEIM</h1>
-  <div class="sub">A TALE OF THE NORTH</div>
+  <div class="rule"></div>
+  <div class="sub">A Tale of the North</div>
   <table>
     <tr><td>WASD</td><td>move</td></tr>
     <tr><td>Shift</td><td>sprint</td></tr>
@@ -93,11 +115,11 @@ const Music=(()=>{
   const motif=[110,164.81,146.83,110,130.81,98,110,82.41];
   function tick(){const s=ctx.currentTime+.05;
     if(step%4===0)drum();
-    if(step%2===0)tone(55,s,3.2,.05,"sawtooth");
-    tone(motif[step%motif.length],s,2.4,.045,"triangle");
-    if(step%16===8)tone(220,s,1.8,.035,"sine");
+    if(step%2===0){tone(55,s,4,.05,"sawtooth");tone(82.41,s,4,.03,"sawtooth");}   // cold drone fifth
+    tone(motif[step%motif.length],s,3,.04,"triangle");
+    if(step%16===8){tone(220,s,2.6,.03,"sine");tone(261.63,s,2.6,.022,"sine");}   // distant choir
     step++;}
-  function start(){if(on)return;ac();on=true;step=0;tick();timers.push(setInterval(tick,1600));}
+  function start(){if(on)return;ac();on=true;step=0;tick();timers.push(setInterval(tick,2000));}
   function stop(){on=false;timers.forEach(clearInterval);timers=[];}
   function roar(){ac();const s=ctx.currentTime+.02;
     const o=ctx.createOscillator(),g=ctx.createGain();o.type="sawtooth";
@@ -153,18 +175,18 @@ renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(deviceP
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 const scene=new THREE.Scene();
-scene.fog=new THREE.Fog(0xb8c4d8,60,420);
+scene.fog=new THREE.Fog(0xaab6be,35,340);
 const camera=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.1,1400);camera.rotation.order="YXZ";
 
-scene.add(new THREE.HemisphereLight(0xcdd8ec,0x4a4f42,0.55));
-const sun=new THREE.DirectionalLight(0xffd9a8,2.4);scene.add(sun);scene.add(sun.target);
+scene.add(new THREE.HemisphereLight(0x9fb2c8,0x39413b,0.5));
+const sun=new THREE.DirectionalLight(0xf2e6cd,2.0);scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-0.002;sun.shadow.normalBias=0.06;
 const sc2=sun.shadow.camera;sc2.left=-110;sc2.right=110;sc2.top=110;sc2.bottom=-110;sc2.near=20;sc2.far=500;
 
 /* gradient dusk sky */
 const skyDome=new THREE.Mesh(new THREE.SphereGeometry(1100,24,12),new THREE.ShaderMaterial({
   side:THREE.BackSide,depthWrite:false,fog:false,
-  uniforms:{top:{value:new THREE.Color(0x22355e)},mid:{value:new THREE.Color(0x7d92bb)},bot:{value:new THREE.Color(0xe8b27a)}},
+  uniforms:{top:{value:new THREE.Color(0x2e3d52)},mid:{value:new THREE.Color(0x7b8a97)},bot:{value:new THREE.Color(0xc3ccce)}},
   vertexShader:"varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
   fragmentShader:"uniform vec3 top;uniform vec3 mid;uniform vec3 bot;varying vec3 vP;void main(){float h=clamp(normalize(vP).y,0.0,1.0);vec3 c=h<0.18?mix(bot,mid,h/0.18):mix(mid,top,(h-0.18)/0.82);gl_FragColor=vec4(c,1.0);}"
 }));
@@ -200,13 +222,13 @@ const tGeo=new THREE.PlaneGeometry(WS,WS,G,G);tGeo.rotateX(-Math.PI/2);
   for(let i=0;i<P.count;i++)P.setY(i,height(P.getX(i),P.getZ(i)));
   tGeo.computeVertexNormals();
   const col=new Float32Array(P.count*3),N=tGeo.attributes.normal;
-  const cGrass=new THREE.Color(0x55683f),cRock=new THREE.Color(0x6b6f76),
-        cSnow=new THREE.Color(0xe9eef5),cMud=new THREE.Color(0x5c5546),tmp=new THREE.Color();
+  const cGrass=new THREE.Color(0x505c41),cRock=new THREE.Color(0x5d6066),
+        cSnow=new THREE.Color(0xdfe6ec),cMud=new THREE.Color(0x4c483c),tmp=new THREE.Color();
   for(let i=0;i<P.count;i++){
     const h=P.getY(i),ny=N.getY(i);
     tmp.copy(h<1.2?cMud:cGrass);
-    if(h>18)tmp.lerp(cRock,Math.min(1,(h-18)/16));
-    if(h>44)tmp.lerp(cSnow,Math.min(1,(h-44)/18));
+    if(h>12)tmp.lerp(cRock,Math.min(1,(h-12)/14));
+    if(h>30)tmp.lerp(cSnow,Math.min(1,(h-30)/14));
     if(ny<0.72)tmp.lerp(cRock,Math.min(1,(0.72-ny)/0.3));   // steep = rock
     // subtle variation
     const v=0.92+hash2(i,i*7)*0.16;tmp.multiplyScalar(v);
@@ -238,8 +260,8 @@ const trees=[];
     E.set(0,hash2(tries,9)*6.28,0);Q.setFromEuler(E);
     M.compose(V.set(x,h+1.1*s,z),Q,new THREE.Vector3(s,s,s));trunk.setMatrixAt(placed,M);
     M.compose(V.set(x,h+(2.2+2.6)*s*.9,z),Q,new THREE.Vector3(s,s,s));fol.setMatrixAt(placed,M);
-    tmpC.setHSL(.35,.32,.16+Math.min(.3,h/110)+hash2(tries,3)*.05);   // frostier when higher
-    if(h>26)tmpC.lerp(new THREE.Color(0xdfe8ee),(h-26)/20);
+    tmpC.setHSL(.33,.22,.11+Math.min(.22,h/140)+hash2(tries,3)*.04);  // dark nordic pines, frostier when higher
+    if(h>22)tmpC.lerp(new THREE.Color(0xd8e2e8),Math.min(1,(h-22)/16));
     fol.setColorAt(placed,tmpC);
     trees.push([x,z,s]);placed++;}
   trunk.count=fol.count=placed;scene.add(trunk);scene.add(fol);
@@ -298,6 +320,15 @@ let wordsLearned=0;
   for(let i=0;i<6;i++){const a=i/6*Math.PI*2,sx=cxs+Math.cos(a)*9,sz=czs+Math.sin(a)*9;
     const st=box(1.6,6+hash2(i,44)*2.5,1,stoneM,sx,height(sx,sz)+3,sz);st.rotation.y=a;st.rotation.z=(hash2(i,3)-.5)*.14;}
 }
+{ // ruined nordic ring on the western rise
+  const rx=-84,rz=58;
+  for(let i=0;i<9;i++){if(i%3===0)continue;
+    const a=i/9*Math.PI*2,px=rx+Math.cos(a)*8,pz=rz+Math.sin(a)*8,hh=2.5+hash2(i,21)*5.5;
+    const c=box(1.3,hh,1.3,stoneM,px,height(px,pz)+hh/2,pz);c.rotation.y=a;c.rotation.z=(hash2(i,5)-.5)*.2;}
+  const ha=height(rx,rz-8);
+  box(1.1,7,1.1,stoneM,rx-2.6,ha+3.5,rz-8);box(1.1,7,1.1,stoneM,rx+2.6,ha+3.5,rz-8);
+  box(6.6,1.1,1.2,stoneM,rx,ha+7.1,rz-8);                            // arch lintel
+}
 for(const w of WORDS){
   const h=height(w.x,w.z);
   const wall=box(5.5,4.5,1,stoneM,w.x,h+2.2,w.z);wall.rotation.y=hash2(w.x|0,w.z|0)*6.28;
@@ -345,6 +376,58 @@ function spawnWolf(i,far){
   g.userData={hp:3,st:"wander",t:2+hash2(i,2)*4,dir:hash2(i,8)*6.28,spd:2.2+hash2(i,4),cool:0,dead:0,ph:hash2(i,6)*6,kb:null};
   scene.add(g);wolves.push(g);return g;}
 for(let i=0;i<9;i++)spawnWolf(i,false);
+
+/* ============================================================ TUXEDO CATS */
+const cats=[];
+const catB=new THREE.MeshLambertMaterial({color:0x17181c}),catW=new THREE.MeshLambertMaterial({color:0xf2f0ea}),
+      catP=new THREE.MeshLambertMaterial({color:0xd8a0a8});
+function makeCat(){
+  const g=new THREE.Group();
+  box(.62,.34,.3,catB,0,.33,0,g);                                    // body
+  box(.2,.2,.06,catW,0,.28,-.34,g);                                  // white chest
+  const hd=box(.3,.28,.28,catB,0,.52,-.42,g);
+  box(.16,.12,.08,catW,0,-.07,-.12,hd);                              // white muzzle
+  box(.05,.04,.03,catP,0,-.05,-.16,hd);                              // pink nose
+  box(.09,.12,.06,catB,-.09,.18,0,hd).rotation.z=.2;                 // ears
+  box(.09,.12,.06,catB,.09,.18,0,hd).rotation.z=-.2;
+  const tail=box(.07,.4,.07,catB,0,.55,.36,g);tail.rotation.x=.5;g.tail=tail;
+  g.legs=[];
+  for(const[lx,lz]of[[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]]){
+    const l=box(.09,.3,.09,catB,lx,.15,lz,g);
+    box(.1,.08,.1,catW,0,-.13,0,l);                                  // white paws
+    g.legs.push(l);}
+  return g;}
+for(let i=0;i<6;i++){
+  const g=makeCat(),a=hash2(i,31)*6.28,r=6+hash2(i,13)*22;
+  const x=Math.cos(a)*r,z=Math.sin(a)*r;
+  g.position.set(x,height(x,z),z);
+  g.userData={st:"wander",t:1+hash2(i,7)*3,dir:hash2(i,9)*6.28,spd:1.1+hash2(i,4)*.7,ph:hash2(i,2)*6,purr:0};
+  scene.add(g);cats.push(g);}
+function updateCats(dt,time){
+  for(const c of cats){const u=c.userData;
+    const dx=player.x-c.position.x,dz=player.z-c.position.z,d=Math.hypot(dx,dz);
+    u.t-=dt;
+    if(u.t<=0){
+      const r=hash2((c.position.x*13)|0,(c.position.z*7+u.ph*99)|0);
+      if(d<7&&r<.5){u.st="curious";u.t=3+r*4;}
+      else if(r<.3){u.st="sit";u.t=2.5+r*6;}
+      else{u.st="wander";u.t=2+r*4;u.dir+=(r-.5)*2.6;}}
+    if(u.st==="curious")u.dir=Math.atan2(dx,dz);
+    const spd=u.st==="sit"?0:u.st==="curious"&&d>1.6?u.spd*1.6:u.st==="curious"?0:u.spd;
+    if(spd>0){
+      const nx=c.position.x+Math.sin(u.dir)*spd*dt,nz=c.position.z+Math.cos(u.dir)*spd*dt;
+      const r2=Math.hypot(nx,nz),nh=height(nx,nz);
+      if(r2<40&&nh>1&&Math.abs(nh-c.position.y)<1.5){c.position.x=nx;c.position.z=nz;}
+      else u.dir+=2.4*dt;
+      u.ph+=dt*spd*4;
+      for(let i=0;i<4;i++)c.legs[i].rotation.x=Math.sin(u.ph+(i%2?0:Math.PI))*.5;}
+    else for(let i=0;i<4;i++)c.legs[i].rotation.x*=1-Math.min(1,dt*8);
+    c.position.y+=(height(c.position.x,c.position.z)-c.position.y)*Math.min(1,dt*10);
+    c.rotation.y+=((u.dir-c.rotation.y+Math.PI*3)%(Math.PI*2)-Math.PI)*Math.min(1,dt*6);
+    c.tail.rotation.x=.5+Math.sin(time*2.3+u.ph)*.3;                 // tail sway
+    c.rotation.x=u.st==="sit"?-.28:0;                                // sits back
+  }
+}
 
 /* ============================================================ PLAYER & SWORD */
 const player={x:0,y:0,z:34,vy:0,hp:100,st:100,onGround:true,dead:false};
@@ -415,6 +498,37 @@ addEventListener("mousemove",e=>{if(document.pointerLockElement!==cv)return;
   yaw-=e.movementX*.0024;pitch-=e.movementY*.0024;
   const l=Math.PI/2-.01;pitch=Math.max(-l,Math.min(l,pitch));});
 
+/* ----- touch: drag to look, joystick to move, buttons to act ----- */
+let moveF=0,moveS=0;
+if(isTouch){
+  document.getElementById("touch").style.display="block";
+  let lookId=null,lookX=0,lookY=0;
+  cv.addEventListener("touchstart",e=>{e.preventDefault();
+    for(const t of e.changedTouches)if(lookId===null){lookId=t.identifier;lookX=t.clientX;lookY=t.clientY;}},{passive:false});
+  addEventListener("touchmove",e=>{
+    for(const t of e.changedTouches)if(t.identifier===lookId){
+      yaw-=(t.clientX-lookX)*.005;pitch-=(t.clientY-lookY)*.005;
+      const l=Math.PI/2-.01;pitch=Math.max(-l,Math.min(l,pitch));
+      lookX=t.clientX;lookY=t.clientY;}},{passive:false});
+  addEventListener("touchend",e=>{for(const t of e.changedTouches)if(t.identifier===lookId)lookId=null;});
+  const joy=document.getElementById("joy"),knob=document.getElementById("knob"),R=44;
+  let joyId=null,jcx=0,jcy=0;
+  const joyMove=t=>{let dx=t.clientX-jcx,dy=t.clientY-jcy;const d=Math.hypot(dx,dy);
+    if(d>R){dx*=R/d;dy*=R/d;}
+    knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+    moveS=dx/R;moveF=-dy/R;};
+  joy.addEventListener("touchstart",e=>{e.preventDefault();e.stopPropagation();
+    const t=e.changedTouches[0];joyId=t.identifier;
+    const r=joy.getBoundingClientRect();jcx=r.left+r.width/2;jcy=r.top+r.height/2;joyMove(t);},{passive:false});
+  addEventListener("touchmove",e=>{for(const t of e.changedTouches)if(t.identifier===joyId)joyMove(t);},{passive:false});
+  addEventListener("touchend",e=>{for(const t of e.changedTouches)if(t.identifier===joyId){
+    joyId=null;moveF=moveS=0;knob.style.transform="translate(-50%,-50%)";}});
+  const bind=(id,fn)=>document.getElementById(id).addEventListener("touchstart",
+    e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false});
+  bind("bAtk",doSwing);bind("bShout",doShout);
+  bind("bJump",()=>{if(player.onGround&&!player.dead){player.vy=7.5;player.onGround=false;}});
+}
+
 /* ============================================================ WOLF AI */
 function updateWolves(dt,time){
   for(const w of wolves){const u=w.userData;
@@ -468,21 +582,23 @@ function updateDragon(dt,time){
 /* ============================================================ COMPASS */
 const cmp=document.getElementById("compass"),cg=cmp.getContext("2d");
 function drawCompass(){
-  const W=cmp.width,H=cmp.height;cg.clearRect(0,0,W,H);
-  cg.fillStyle="rgba(0,0,0,.35)";cg.fillRect(0,H/2-12,W,24);
-  cg.strokeStyle="rgba(232,220,174,.5)";cg.strokeRect(.5,H/2-12.5,W-1,25);
-  const ppr=W/(Math.PI*1.1);
-  const items=[["N",0],["E",Math.PI/2],["S",Math.PI],["W",-Math.PI/2]];
+  const W=cmp.width,H=cmp.height,cy2=H/2;cg.clearRect(0,0,W,H);
+  cg.fillStyle="rgba(8,10,12,.38)";cg.fillRect(0,cy2-11,W,22);
+  cg.fillStyle="rgba(225,230,235,.75)";cg.fillRect(0,cy2-11,W,1);cg.fillRect(0,cy2+10,W,1);
+  const ppr=W/(Math.PI*1.15),wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
   cg.textAlign="center";cg.textBaseline="middle";
+  for(let deg=0;deg<360;deg+=15){                        // graduation ticks
+    const x=W/2-wrap(deg*Math.PI/180-yaw)*ppr;if(x<6||x>W-6)continue;
+    cg.fillStyle="rgba(225,230,235,.5)";cg.fillRect(x-.5,cy2+4,1,5);}
+  const items=[["N",0],["E",-Math.PI/2],["S",Math.PI],["W",Math.PI/2]];
   for(const[t,a]of items){
-    let da=a-yaw;da=Math.atan2(Math.sin(da),Math.cos(da));
-    const x=W/2-da*ppr;if(x<8||x>W-8)continue;
-    cg.fillStyle=t==="N"?"#e8b27a":"#e8dcae";cg.font="15px Georgia";cg.fillText(t,x,H/2);}
-  for(const w of WORDS){if(w.taken)continue;
+    const x=W/2-wrap(a-yaw)*ppr;if(x<10||x>W-10)continue;
+    cg.fillStyle="#e6eaee";cg.font="600 15px 'Segoe UI',Arial";cg.fillText(t,x,cy2-1);}
+  for(const w of WORDS){if(w.taken)continue;             // quest markers
     const a=Math.atan2(w.x-player.x,w.z-player.z)+Math.PI;
-    let da=a-yaw;da=Math.atan2(Math.sin(da),Math.cos(da));
-    const x=W/2-da*ppr;if(x<8||x>W-8)continue;
-    cg.fillStyle="#9fd8ff";cg.save();cg.translate(x,H/2);cg.rotate(Math.PI/4);cg.fillRect(-4,-4,8,8);cg.restore();}
+    const x=W/2-wrap(a-yaw)*ppr;if(x<8||x>W-8)continue;
+    cg.fillStyle="#cfe6f8";cg.beginPath();cg.moveTo(x,cy2-7);cg.lineTo(x+5,cy2+3);cg.lineTo(x-5,cy2+3);cg.closePath();cg.fill();}
+  cg.fillStyle="#e6eaee";cg.beginPath();cg.moveTo(W/2,cy2+12);cg.lineTo(W/2+4,cy2+18);cg.lineTo(W/2-4,cy2+18);cg.closePath();cg.fill(); // center caret
 }
 
 /* ============================================================ SNOW */
@@ -510,11 +626,11 @@ function physics(dt){
   else player.st=Math.min(100,player.st+9*dt);
   let mx=0,mz=0;
   if(keys["w"])mz-=1;if(keys["s"])mz+=1;if(keys["a"])mx-=1;if(keys["d"])mx+=1;
+  if(isTouch){mx+=moveS;mz-=moveF;}
   const l=Math.hypot(mx,mz);
-  if(l>0){mx/=l;mz/=l;
-    const s=Math.sin(yaw),c=Math.cos(yaw);
-    player.x+=(mx*c-mz*s)*spd*dt;
-    player.z+=(-mx*s-mz*c)*spd*dt;}
+  if(l>1e-4){const il=Math.min(1,l)/l;mx*=il;mz*=il;
+    player.x+=(Math.sin(yaw)*mz+Math.cos(yaw)*mx)*spd*dt;
+    player.z+=(Math.cos(yaw)*mz-Math.sin(yaw)*mx)*spd*dt;}
   const gh=height(player.x,player.z);
   if(keys[" "]&&player.onGround){player.vy=7.5;player.onGround=false;}
   player.vy-=20*dt;player.y+=player.vy*dt;
@@ -533,8 +649,8 @@ const overlay=document.getElementById("overlay");
 let started=false,last=performance.now();
 function loop(now){
   const dt=Math.min(.05,(now-last)/1000),time=now/1000;last=now;
-  if(document.pointerLockElement===cv||isTouch)physics(dt);
-  updateWolves(dt,time);updateDragon(dt,time);updateSnow(dt,time);
+  if(document.pointerLockElement===cv||(isTouch&&started))physics(dt);
+  updateWolves(dt,time);updateCats(dt,time);updateDragon(dt,time);updateSnow(dt,time);
   auroraU.t.value=time;
   /* sword swing animation + hit */
   if(swing>0){swing-=dt;const k=1-swing/.34;
